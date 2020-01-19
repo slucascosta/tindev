@@ -8,7 +8,12 @@ export default (() => {
   return {
     async login(username) {
       const response = await api.post('/devs', { username });
-      return response.data._id;
+      return response.data;
+    },
+    async getUser(id) {
+      const response = await api.get(`devs/${id}`);
+
+      return response.data;
     },
     async getUsers(id) {
       const response = await api.get('/devs', {

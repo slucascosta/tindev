@@ -10,9 +10,9 @@ export default function Login({ history }) {
   async function handleSubmit(e) {
     e.preventDefault();
     
-    var id = await api.login(username);
+    var user = await api.login(username);
 
-    history.push(`/dev/${id}`);
+    history.push(`/dev/${user._id}`, { user });
   }
 
   return (

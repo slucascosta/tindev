@@ -4,7 +4,6 @@ const Dev = require('../models/Devs');
 module.exports = {
   async index(req, res) {
     const { user } = req.headers;
-
     const loggedDev = await Dev.findById(user);
 
     const users = await Dev.find({
@@ -37,5 +36,14 @@ module.exports = {
     });
 
     return res.json(dev);
+  },
+  async byUsername(req, res) {
+    const { id } = req.params;
+
+    const devs = await Dev.find({
+      _id: { $eq: id }
+    });
+
+    return res.json(devs.length && devs[0]);
   }
 };
