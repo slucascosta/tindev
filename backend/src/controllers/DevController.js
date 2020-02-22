@@ -14,7 +14,7 @@ module.exports = {
       ]
     });
 
-    return res.json(users);
+    return res.json(users.map(x => returnUser(x)));
   },
   async store(req, res) {
     const { username } = req.body;
@@ -22,7 +22,7 @@ module.exports = {
     const userExists = await Dev.findOne({ user: username });
 
     if (userExists)
-      return res.json(userExists);
+      return res.json(returnUser(userExists));
 
     const response = await axios.get(`https://api.github.com/users/${ username }`);
 
@@ -34,16 +34,27 @@ module.exports = {
       bio,
       avatar
     });
-
-    return res.json(dev);
+    
+    return res.json(returnUser(dev));
   },
-  async byUsername(req, res) {
+  async byId(req, res) {
     const { id } = req.params;
 
     const devs = await Dev.find({
       _id: { $eq: id }
     });
 
-    return res.json(devs.length && devs[0]);
+    return res.json(devs.length && { _id: dev[0]._id, user: dev[0].user });
   }
 };
+
+function returnUser(user) {
+  let userReturn = {
+    _id: user._id,
+    user: user.user, 
+    bio: user.bio, 
+    name: user.name, 
+    avatar: user.avatar };
+    
+  return userReturn;
+}
