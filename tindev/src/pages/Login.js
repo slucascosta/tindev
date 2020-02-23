@@ -9,11 +9,6 @@ export default function Login({ navigation }) {
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    if (navigation.getParam('logout')) {
-      AsyncStorage.removeItem('userAsJson');
-      return;
-    }
-
     AsyncStorage.getItem('userAsJson').then(userAsJson => {
       if (userAsJson)
         navigation.navigate('Main', { user: JSON.parse(userAsJson) });

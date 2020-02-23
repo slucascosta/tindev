@@ -1,34 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, SafeAreaView, Image, Button } from 'react-native';
+import { StyleSheet, View, SafeAreaView, Image, TouchableOpacity, Text } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import api from '../services/api';
-
 import logo from '../assets/logo.png';
 import UserCad from '../components/UserCard';
+import LikeAndDislike from '../components/LikeAndDislike';
 
 export default function Main({ navigation }) {
-  const currentUser = navigation.getParam('user');
+  const loggedUser = navigation.getParam('user');
   const [ users, setUsers ] = useState([]);
 
   useEffect(() => {
-    async function loadUsers() {
-      const users = await api.getUsers(currentUser._id);
-      setUsers(users);
-    }
-
     loadUsers();
   }, []);
 
+  async function loadUsers() {
+    const users = await api.getUsers(loggedUser._id);
+    setUsers(users);
+  }
+
+  async function handleLogout() {
+    await AsyncStorage.clear();
+      
+    navigation.navigate('Login');
+  }
+
+  async function handleLikeAndDislike() {
+    setUsers(users.splice(1));
+  }
+
+  function getTargetUser() {
+    return users && users[0];
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <Image source={logo} />
-      <Button title="Voltar" onPress={() => navigation.navigate('Login', { logout: true })}></Button>
+      <TouchableOpacity onPress={handleLogout}>
+        <Image
+          style={styles.logo} 
+          source={logo} />
+        <Text style={styles.username}>@{loggedUser.user}</Text>
+      </TouchableOpacity>
 
       <View style={styles.cardsContainer}>
-        {users.map(user =>
-          <UserCad key={user._id} user={user}></UserCad>
-        )}
+        { users.length
+          ? users.map((user, index) => <UserCad key={user._id} user={user} style={{zIndex: - index }} />)
+          : <Text style={styles.empty}>Acabou :(</Text>
+        }
       </View>
+
+      { users.length > 0 && <LikeAndDislike loggedUser={loggedUser} getTargetUser={getTargetUser} callback={handleLikeAndDislike} /> }
     </SafeAreaView>
   )
 }
@@ -45,5 +67,19 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     justifyContent: 'center',
     maxHeight: 500
+  },
+  logo: {
+    marginTop: 30
+  },
+  username: {
+    alignSelf: 'center',
+    top: 3,
+    color: '#777'
+  },
+  empty: {
+    alignSelf: 'center',
+    color: '#999',
+    fontSize: 24,
+    fontWeight: 'bold'
   }
 });

@@ -1,14 +1,14 @@
 import React from 'react'
 import { View, Image, StyleSheet, Text } from 'react-native';
 
-export default function UserCad({ user }) {
+export default function UserCad({ user, style }) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, style]}>
       <Image style={styles.avatar} source={{uri: user.avatar }} />
       <View style={styles.footer}>
         <Text style={styles.name}>{user.name || '@' + user.user}</Text>
         {user.name ? <Text style={styles.username}>@{user.user}</Text> : null}
-        <Text style={styles.bio} numberOfLines="3">{user.bio}</Text>
+        <Text style={styles.bio} numberOfLines={3}>{user.bio}</Text>
       </View>
     </View>
   );
@@ -29,7 +29,8 @@ const styles = StyleSheet.create({
   },
   avatar: {
     flex: 1,
-    height: 300
+    height: 300,
+    backgroundColor: '#fff'
   },
   footer: {
     backgroundColor: '#fff',

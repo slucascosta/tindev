@@ -16,6 +16,16 @@ export default (() => {
       });
 
       return response.data;
+    },
+    async dislike(currentId, id) {
+      await api.post(`/devs/${id}/dislikes`, null, {
+        headers: { user: currentId }
+      });
+    },
+    async like(currentId, id) {
+      await api.post(`/devs/${id}/likes`, null, {
+        headers: { user: currentId }
+      })
     }
   }
 })();
