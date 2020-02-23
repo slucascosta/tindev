@@ -1,24 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, SafeAreaView, Image, TouchableOpacity, Text } from 'react-native';
+import io from 'socket.io-client';
 import AsyncStorage from '@react-native-community/async-storage';
+import { StyleSheet, View, SafeAreaView, Image, TouchableOpacity, Text } from 'react-native';
 
 import api from '../services/api';
 import logo from '../assets/logo.png';
 import UserCad from '../components/UserCard';
 import LikeAndDislike from '../components/LikeAndDislike';
+import ItsAMatch from '../components/ItsAMatch';
 
 export default function Main({ navigation }) {
   const loggedUser = navigation.getParam('user');
-  const [ users, setUsers ] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [matchDev, setMatchDev] = useState(null);
 
   useEffect(() => {
-    loadUsers();
-  }, []);
+    async function loadUsers() {
+      const users = await api.getUsers(loggedUser._id);
+      setUsers(users);
+    }
 
-  async function loadUsers() {
-    const users = await api.getUsers(loggedUser._id);
-    setUsers(users);
-  }
+    loadUsers();
+  }, [loggedUser]);
+
+  useEffect(() => {
+    const socket = io('http://localhost:3333', {
+      query: { user: loggedUser._id }
+    });
+
+    socket.on('match', dev => {
+      setMatchDev(dev);
+    });
+  }, [loggedUser]);
 
   async function handleLogout() {
     await AsyncStorage.clear();
@@ -33,7 +46,7 @@ export default function Main({ navigation }) {
   function getTargetUser() {
     return users && users[0];
   }
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity onPress={handleLogout}>
@@ -51,6 +64,8 @@ export default function Main({ navigation }) {
       </View>
 
       { users.length > 0 && <LikeAndDislike loggedUser={loggedUser} getTargetUser={getTargetUser} callback={handleLikeAndDislike} /> }
+
+      { matchDev && <ItsAMatch user={matchDev} callback={() => setMatchDev(null)}></ItsAMatch> }
     </SafeAreaView>
   )
 }

@@ -17,7 +17,7 @@ export default function LikeAndDislike({ loggedUser, getTargetUser, callback }) 
   }
 
   return (
-    <View style={styles.buttonsContainer}>
+    <View style={styles.container}>
       <TouchableOpacity onPress={handleDislike} style={styles.button}>
         <Image source={dislike} />
       </TouchableOpacity>
@@ -29,9 +29,10 @@ export default function LikeAndDislike({ loggedUser, getTargetUser, callback }) 
 }
 
 const styles = StyleSheet.create({ 
-  buttonsContainer: {
+  container: {
     flexDirection: 'row',
-    marginBottom: 30
+    marginBottom: 30,
+    zIndex: 0
   },
   button: {
     width: 50,

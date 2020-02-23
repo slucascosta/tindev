@@ -1,5 +1,7 @@
 const axios = require('axios');
+
 const Dev = require('../models/Devs');
+const formatUser = require('../helpers/formatUser');
 
 module.exports = {
   async index(req, res) {
@@ -14,7 +16,7 @@ module.exports = {
       ]
     });
 
-    return res.json(users.map(x => returnUser(x)));
+    return res.json(users.map(x => formatUser.formatToReturn(x)));
   },
   async store(req, res) {
     const { username } = req.body;
@@ -22,7 +24,7 @@ module.exports = {
     const userExists = await Dev.findOne({ user: username });
 
     if (userExists)
-      return res.json(returnUser(userExists));
+      return res.json(formatUser.formatToReturn(userExists));
 
     const response = await axios.get(`https://api.github.com/users/${ username }`);
 
@@ -35,7 +37,7 @@ module.exports = {
       avatar
     });
     
-    return res.json(returnUser(dev));
+    return res.json(formatUser.formatToReturn(dev));
   },
   async byId(req, res) {
     const { id } = req.params;
@@ -47,14 +49,3 @@ module.exports = {
     return res.json(devs.length && { _id: dev[0]._id, user: dev[0].user });
   }
 };
-
-function returnUser(user) {
-  let userReturn = {
-    _id: user._id,
-    user: user.user, 
-    bio: user.bio, 
-    name: user.name, 
-    avatar: user.avatar };
-    
-  return userReturn;
-}

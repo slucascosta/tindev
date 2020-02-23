@@ -1,4 +1,5 @@
 const Dev = require('../models/Devs');
+const formatUser = require('../helpers/formatUser');
 
 module.exports = {
   async  store(req, res) {
@@ -16,16 +17,16 @@ module.exports = {
       const targetSocket = req.connectedUsers[devId];
 
       if (loggedSocket)
-        req.io.to(loggedSocket).emit('match', targetDev);
+        req.io.to(loggedSocket).emit('match', formatUser.formatToReturn(targetDev));
 
       if (targetSocket)
-        req.io.to(targetSocket).emit('match', loggedDev);
+        req.io.to(targetSocket).emit('match', formatUser.formatToReturn(loggedDev));
     }      
 
     loggedDev.likes.push(targetDev._id);
 
     await loggedDev.save();
 
-    res.json(loggedDev);
+    res.json(formatUser.formatToReturn(targetDev));
   }
 }

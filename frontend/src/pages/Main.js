@@ -86,7 +86,7 @@ export default function Main({ match, location }) {
         <div className="match-container">
           <img src={istsamatch} alt="It`s a match" />
           <img className="avatar" src={matchDev.avatar} alt={matchDev.name} />
-          <strong>{matchDev.name}</strong>
+          <strong>{matchDev.name ?? '@' + matchDev.user }</strong>
           <p>{matchDev.bio}</p>
           <button type="button" onClick={() => setMatchDev(null)}>FECHAR</button>
         </div>
